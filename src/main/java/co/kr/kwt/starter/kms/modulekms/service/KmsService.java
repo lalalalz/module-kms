@@ -9,10 +9,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class KmsService {
 
@@ -21,6 +21,7 @@ public class KmsService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
     private final KmsProperties kmsProperties;
+    private final KmsRepository kmsRepository;
 
     /**
      * API로부터 시크릿 정보를 조회하여 지정된 타입으로 변환
@@ -32,9 +33,13 @@ public class KmsService {
      * @throws SecretParsingException  JSON 파싱 실패시
      */
     public <T extends Secret> T getSecrets(Class<T> tClass) {
+        if (kmsRepository.isCached()) {
+            return kmsRepository.getSecret();
+        }
+
         try {
             String responseBody = fetchFromApi();
-            return parseSecret(responseBody, tClass);
+            return kmsRepository.save(parseSecret(responseBody, tClass));
         }
         catch (JsonProcessingException e) {
             throw new SecretParsingException("Failed to parse secret response", e);

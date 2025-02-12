@@ -51,46 +51,13 @@ public interface Secret {
 // 아래는 예시입니다...
 @Getter
 @Setter
-public class BaseSecret implements Secret {
-    private String id;
-    private String secretType;
-    private String secretKey;
-    private String description;
-    private String lastModified;
-    private Integer version;
-}
-
-// DB 설정을 위한 Secret 구현체
-@Getter
-@Setter
-public class DatabaseSecret extends BaseSecret {
-    private SecretValue secretValue;
-
-    @Getter
-    @Setter
-    public static class SecretValue {
-        private String driver;
-        private String host;
-        private String port;
-        private String database;
-        private String username;
-        private String password;
-    }
-}
-
-// Redis 설정을 위한 Secret 구현체
-@Getter
-@Setter
-public class RedisSecret extends BaseSecret {
-    private SecretValue secretValue;
-
-    @Getter
-    @Setter
-    public static class SecretValue {
-        private String host;
-        private String port;
-        private String password;
-    }
+public class MySecret extends Secret {
+   private String driver;
+   private String host;
+   private String port;
+   private String database;
+   private String username;
+   private String password;
 }
 ```
 
@@ -109,18 +76,17 @@ public class ApplicationService {
     public void initializeDatabase() {
         try {
             // DB 시크릿 정보 조회
-            DatabaseSecret dbSecret = kmsService.getSecrets(DatabaseSecret.class);
-            DatabaseSecret.SecretValue secretValue = dbSecret.getSecretValue();
+           MySecret mySecret = kmsService.getSecrets(MySecret.class);
 
             // DB 연결 설정
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            dataSource.setDriverClassName(secretValue.getDriver());
+            dataSource.setDriverClassName(mySecret.getDriver());
             dataSource.setUrl(String.format("jdbc:mysql://%s:%s/%s",
-                    secretValue.getHost(),
-                    secretValue.getPort(),
-                    secretValue.getDatabase()));
-            dataSource.setUsername(secretValue.getUsername());
-            dataSource.setPassword(secretValue.getPassword());
+                    mySecret.getHost(),
+                    mySecret.getPort(),
+                    mySecret.getDatabase()));
+            dataSource.setUsername(mySecret.getUsername());
+            dataSource.setPassword(mySecret.getPassword());
 
         }
         catch (SecretNotFoundException e) {
@@ -128,24 +94,6 @@ public class ApplicationService {
         }
         catch (SecretParsingException e) {
             log.error("Failed to parse database secret", e);
-        }
-    }
-
-    public void initializeRedis() {
-        try {
-            // Redis 시크릿 정보 조회
-            RedisSecret redisSecret = kmsService.getSecrets(RedisSecret.class);
-            RedisSecret.SecretValue secretValue = redisSecret.getSecretValue();
-
-            // Redis 연결 설정
-            RedisStandaloneConfiguration redisConfig =
-                    new RedisStandaloneConfiguration(secretValue.getHost(),
-                            Integer.parseInt(secretValue.getPort()));
-            redisConfig.setPassword(secretValue.getPassword());
-
-        }
-        catch (SecretNotFoundException | SecretParsingException e) {
-            log.error("Failed to initialize Redis", e);
         }
     }
 }

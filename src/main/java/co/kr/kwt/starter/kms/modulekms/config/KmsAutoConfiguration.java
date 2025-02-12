@@ -1,5 +1,6 @@
 package co.kr.kwt.starter.kms.modulekms.config;
 
+import co.kr.kwt.starter.kms.modulekms.service.KmsRepository;
 import co.kr.kwt.starter.kms.modulekms.service.KmsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,18 @@ public class KmsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public KmsService kmsService(RestTemplate restTemplate, KmsProperties kmsProperties, ObjectMapper objectMapper) {
-        return new KmsService(objectMapper, restTemplate, kmsProperties);
+    public KmsRepository kmsRepository() {
+        return new KmsRepository();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public KmsService kmsService(
+            RestTemplate restTemplate,
+            KmsProperties kmsProperties,
+            ObjectMapper objectMapper,
+            KmsRepository kmsRepository
+    ) {
+        return new KmsService(objectMapper, restTemplate, kmsProperties, kmsRepository);
     }
 }
