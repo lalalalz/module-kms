@@ -1,5 +1,6 @@
-package co.kr.kwt.starter.kms.modulekms.service;
+package co.kr.kwt.starter.kms.modulekms.repository;
 
+import co.kr.kwt.starter.kms.modulekms.service.Secret;
 import org.springframework.stereotype.Repository;
 
 @Repository

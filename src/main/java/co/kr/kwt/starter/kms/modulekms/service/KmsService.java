@@ -1,6 +1,7 @@
 package co.kr.kwt.starter.kms.modulekms.service;
 
 import co.kr.kwt.starter.kms.modulekms.config.KmsProperties;
+import co.kr.kwt.starter.kms.modulekms.repository.KmsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

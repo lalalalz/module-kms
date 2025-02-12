@@ -1,6 +1,6 @@
 package co.kr.kwt.starter.kms.modulekms.config;
 
-import co.kr.kwt.starter.kms.modulekms.service.KmsRepository;
+import co.kr.kwt.starter.kms.modulekms.repository.KmsRepository;
 import co.kr.kwt.starter.kms.modulekms.service.KmsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
