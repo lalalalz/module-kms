@@ -46,7 +46,9 @@ public interface Secret {
     String getSecretKey();
 }
 
-// Secret 구현체 예시 - BaseSecret
+// Secret 구현체 예시 - BaseSecret 
+// 자신이 등록한 Secret 구조에 맞게 구성하면 됩니다. 
+// 아래는 예시입니다...
 @Getter
 @Setter
 public class BaseSecret implements Secret {
@@ -98,16 +100,16 @@ public class RedisSecret extends BaseSecret {
 
 @Service
 public class ApplicationService {
-    private final SecretService secretService;
+    private final KmsService kmsService;
 
-    public ApplicationService(SecretService secretService) {
-        this.secretService = secretService;
+    public ApplicationService(KmsService kmsService) {
+        this.kmsService = kmsService;
     }
 
     public void initializeDatabase() {
         try {
             // DB 시크릿 정보 조회
-            DatabaseSecret dbSecret = secretService.getSecrets(DatabaseSecret.class);
+            DatabaseSecret dbSecret = kmsService.getSecrets(DatabaseSecret.class);
             DatabaseSecret.SecretValue secretValue = dbSecret.getSecretValue();
 
             // DB 연결 설정
@@ -132,7 +134,7 @@ public class ApplicationService {
     public void initializeRedis() {
         try {
             // Redis 시크릿 정보 조회
-            RedisSecret redisSecret = secretService.getSecrets(RedisSecret.class);
+            RedisSecret redisSecret = kmsService.getSecrets(RedisSecret.class);
             RedisSecret.SecretValue secretValue = redisSecret.getSecretValue();
 
             // Redis 연결 설정
