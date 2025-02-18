@@ -36,7 +36,37 @@ implementation 'co.kr.kwt.starter:module-kms:${moduleKmsVersion}'
 implementation("co.kr.kwt.starter:module-kms:${moduleKmsVersion}")
 ```
 
-### 2. Secret 구현체 생성
+### 2. 속성 설정
+
+application.yml 또는 application.properties 파일에 KMS 관련 설정을 추가합니다.
+
+#### application.yml
+```yaml
+# yaml
+kms:
+   enabled: true  # KMS 모듈 활성화 (기본값: true)
+   url: "https://your-kms-server.com/api"  # KMS 서버 URL
+   token: "your-access-token"  # KMS 서버 접근 토큰
+   secret-key: "your-secret-key"  # KMS 암호화 키
+   
+```
+
+```properties
+# properties
+kms.enabled=true
+kms.url=https://your-kms-server.com/api
+kms.token=your-access-token
+kms.secret-key=your-secret-key
+```
+
+- kms.enabled: KMS 모듈의 활성화 여부를 설정합니다. 
+  - 기본값은 true입니다.
+  - 따라서, 따로 작성해주지 않아도 됩니다.
+- kms.token: KMS 서버 접근을 위한 인증 토큰입니다.
+- kms.url: KMS 서버의 API 엔드포인트 URL입니다.
+- kms.secret-key: KMS 암호화에 사용되는 비밀키입니다.
+
+### 3. Secret 구현체 생성
 
 Secret 인터페이스를 구현하여 필요한 시크릿 타입을 정의합니다.
 
@@ -61,7 +91,7 @@ public class MySecret extends Secret {
 }
 ```
 
-### 3. 시크릿 서비스 사용
+### 4. 시크릿 서비스 사용
 
 ```java
 
@@ -98,8 +128,11 @@ public class ApplicationService {
     }
 }
 ```
+- 필요한 곳에서 KmsService를 주입받고, getSecrets() 메소드를 호출합니다.
+- 메소드를 호출할 때는 앞서 생성한 자신만의 Secret 타입 구현체를 인자값으로 전달합니다.
+- 메소드 호출 결과로 Secret 타입 구현체에 Kms 정보가 바인딩되어 전달됩니다.
 
-## 4. 예외 처리
+## 5. 예외 처리
 
 모듈은 다음과 같은 예외를 발생시킬 수 있습니다:
 
